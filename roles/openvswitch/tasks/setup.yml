@@ -1,28 +1,21 @@
 ---
-- name: Create ports
-  openvswitch_port:
-    bridge: "{{ item.bridge }}"
-    port: "{{ item.port }}"
-    tag: "{{ item.tag | default('0') }}"
-    state: present
-    set: Interface {{ item.port }} type=internal
+- name: Create bridges
+  template:
+    dest: /etc/sysconfig/network-scripts/ifcfg-{{ item.name }}
+    src: ifcfg-{{ item.name }}.j2
+    owner: root
+    group: root
+    mode: 644
+  when: "{{ lookup('env', item.manage_env) }}" == "y"
   with_items:
-    - { bridge: "metal3", port: "externalgw", tag: "2" }
-    - { bridge: "metal3", port: "m3dnsprov" }
-    - { bridge: "metal3", port: "m3dnsext", tag: "2" }
+    - { name: "baremetal", manage_env: "MANAGE_INT_BRIDGE" }
+    - { name: "provisioning", manage_env: "MANAGE_PRO_BRIDGE" }
 
-- name: Add address to port
-  command: ip addr add 192.168.111.1/24 dev externalgw
-  when: hostvars[inventory_hostname].ansible_externalgw.ipv4.address is not defined
-
-- name: Set link up
-  command: ip link set externalgw up
-
-- name: NAT the interface
-  iptables:
-    action: append
-    chain: POSTROUTING
-    table: nat
-    out_interface: metal3
-    jump: MASQUERADE
+# - name: NAT the interface
+#   iptables:
+#     action: append
+#     chain: POSTROUTING
+#     table: nat
+#     out_interface: metal3
+#     jump: MASQUERADE
 

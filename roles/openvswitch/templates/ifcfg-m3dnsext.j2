@@ -1,0 +1,6 @@
+DEVICE=m3dnsext
+DEVICETYPE=ovs
+TYPE=OVSIntPort
+OVS_BRIDGE=metal3
+OVS_EXTRA="set Interface $DEVICE external-ids:iface-id=$(hostname -s)-$DEVICE-vif"
+HOTPLUG=no

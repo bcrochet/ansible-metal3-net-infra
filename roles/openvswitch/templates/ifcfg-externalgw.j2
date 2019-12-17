@@ -1,0 +1,10 @@
+DEVICE=externalgw
+DEVICETYPE=ovs
+TYPE=OVSIntPort
+OVS_BRIDGE=metal3
+IPADDR=192.168.111.1
+NETMASK=255.255.255.0
+BOOTPROTO=static
+OVS_OPTIONS="tag=2"
+OVS_EXTRA="set Interface $DEVICE external-ids:iface-id=$(hostname -s)-$DEVICE-vif"
+HOTPLUG=no
